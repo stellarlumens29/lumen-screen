@@ -1,0 +1,7 @@
+name = "lumen-screen"
+main = "src/index.js"
+compatibility_date = "2026-11-15"
+
+[[kv_namespaces]]
+binding = "SEEN_PROOFS"
+id = "bdef612af92e42028a22297e27284a5d"
