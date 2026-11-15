@@ -7,8 +7,6 @@ No API keys. Free tiers only.
 ## Live
 
 - **Worker:** https://lumen-screen.shocking-axolotl.workers.dev
-- **Temp account:** "Shocking Axolotl" — **claim within 60 min of 15 Nov ~02:34 UTC (~03:34 UTC)**
-- **Claim URL:** https://dash.cloudflare.com/claim-preview?claimToken=8VChBwVQ79DC1jdX4x3U_SohKsj7IwtwvMEsJ2Mh3wE
 - **KV namespace:** SEEN_PROOFS, id `bdef612af92e42028a22297e27284a5d` (same temp account)
 
 ## Endpoints
