@@ -450,7 +450,13 @@ export default {
     const path = url.pathname.replace(/\/$/, '') || '/';
     try {
       if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders() });
-      if (path === '/health' && request.method === 'GET')
+      // Preflight expects exactly {"ok":true,"protocolVersion":"v1"}, signed
+      // with x-agent-games-signature when AGENT_HMAC_SECRET is set.
+      if (path === '/health' && request.method === 'GET') {
+        const res = json({ ok: true, protocolVersion: 'v1' });
+        return await signResponse(res, env);
+      }
+      if (path === '/status' && request.method === 'GET')
         return json({ ok: true, service: 'lumen-screen', version: VERSION, mode: env.AGENT_HMAC_SECRET ? 'hmac' : 'unsigned-test', time: new Date().toISOString() });
       if (path === '/' && request.method === 'GET')
         return new Response(DEMO_HTML.replaceAll('$ORIGIN', url.origin), { headers: { 'content-type': 'text/html', ...corsHeaders() } });
@@ -458,13 +464,15 @@ export default {
         return await handleScreen(await request.json().catch(() => ({})));
       if (path === '/brief' && request.method === 'POST')
         return await handleBrief(await request.json().catch(() => ({})));
-      if (path === '/gatekeeper' && request.method === 'GET')
-        return json({ ok: true, service: 'gatekeeper', mode: env.AGENT_HMAC_SECRET ? 'hmac' : 'unsigned-test', phase: 'decision-only' });
+      if (path === '/gatekeeper' && request.method === 'GET') {
+        const res = json({ ok: true, protocolVersion: 'v1' });
+        return await signResponse(res, env);
+      }
       if (path === '/gatekeeper' && request.method === 'POST') {
         const res = await handleGatekeeper(request, env);
         return await signResponse(res, env);
       }
-      return json({ error: 'not found', routes: ['GET /health', 'GET /', 'POST /screen', 'POST /brief', 'GET|POST /gatekeeper'] }, 404);
+      return json({ error: 'not found', routes: ['GET /health', 'GET /status', 'GET /', 'POST /screen', 'POST /brief', 'GET|POST /gatekeeper'] }, 404);
     } catch (e) {
       return json({ error: 'internal error', detail: String(e?.message || e) }, 500);
     }
